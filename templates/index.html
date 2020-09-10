@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>files</title>
+</head>
+<body>
+    <div id="app">
+        <input type="file" @change="onFileSelected">
+        <button @click="uploadfiles">submit</button>
+    </div>
+
+    <script>
+        new Vue({
+            el: "#app",
+            delimeters: ['[[',']]'],
+            data:{
+                files: null,
+            },
+            methods:{
+                onFileSelected(event){
+                    this.files = event.target.files[0]
+                },
+                uploadfiles(){
+                    axios.post('http://localhost:8000/graphql/', {
+                        query:`
+                            mutation($image: Upload!){
+                              UploadFile(images: $image){
+                                file{
+                                  images
+                                  uploadedAt
+                                }
+                              }
+                            }`,
+                        variables: {
+                            image: this.files
+                        }
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+</html>
